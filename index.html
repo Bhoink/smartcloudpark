@@ -3,64 +3,87 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SmartCloudPark — Fresh Green Theme</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>SmartCloudPark — Rainbow Festival</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Source+Code+Pro:wght@600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-start:#08120a; --bg-end:#042014;
+    --bg-1:#07060a; --bg-2:#0b0b12;
     --card: rgba(255,255,255,0.03);
-    --muted:#bcd9b6;
-    --text:#eaffef;
-    --accent1:#7bf06a; /* lime */
-    --accent2:#e9ff5a; /* yellow */
-    --accent-grad: linear-gradient(90deg,#7bf06a,#e9ff5a);
-    --danger:#ff6b6b;
-    --radius:12px;
-    --glass: rgba(255,255,255,0.03);
-    --shadow: 0 16px 40px rgba(2,8,6,0.6);
+    --muted:#bfcbd9;
+    --text:#f7fffb;
+    --radius:14px;
+    --shadow: 0 20px 50px rgba(2,6,12,0.6);
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:
-    radial-gradient(900px 400px at 10% 10%, rgba(123,240,106,0.04), transparent 10%),
-    linear-gradient(180deg,var(--bg-start),var(--bg-end));color:var(--text);min-height:100vh}
-  .wrap{max-width:1100px;margin:28px auto;padding:20px}
+  html,body{height:100%;margin:0;background:
+    radial-gradient(1200px 520px at 10% 10%, rgba(255,255,255,0.02), transparent 10%),
+    linear-gradient(180deg,var(--bg-1),var(--bg-2));color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+  .wrap{max-width:1200px;margin:24px auto;padding:22px}
   header{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  h1{margin:0;font-weight:700;font-size:22px}
+  h1{margin:0;font-family:"Source Code Pro", monospace;letter-spacing:.6px}
   .sub{color:var(--muted);font-size:13px}
   .top-stats{display:flex;gap:12px;align-items:center}
   .stat{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.02)}
   .stat strong{display:block}
-  main{margin-top:18px;display:grid;grid-template-columns:1fr 350px;gap:18px}
+  main{margin-top:18px;display:grid;grid-template-columns:1fr 380px;gap:18px}
   .card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,0.02);box-shadow:var(--shadow)}
-  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:12px}
+  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:14px}
+
+  /* RAINBOW slot styles */
   .slot{
-    position:relative;border-radius:12px;padding:14px;text-align:center;min-height:110px;
+    position:relative;border-radius:12px;padding:14px;text-align:center;min-height:110px;overflow:hidden;
     background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
-    border:1px solid rgba(255,255,255,0.02);
-    transition:transform .22s ease, box-shadow .22s ease, border-color .22s, background .22s;
+    border:1px solid rgba(255,255,255,0.03);
+    transition:transform .22s, box-shadow .22s, filter .22s;
   }
-  .slot:hover{transform:translateY(-6px);box-shadow:0 20px 48px rgba(2,8,6,0.55)}
-  .slot .id{font-weight:700;font-size:16px}
-  .slot .meta{color:var(--muted);font-size:13px;margin-top:6px}
-  .slot.free{background:linear-gradient(180deg,#05331a,#084022);border:1px solid rgba(123,240,106,0.12);color:#e9ffea}
-  .slot.occ{background:linear-gradient(180deg,#41210b,#2c1606);border:1px solid rgba(233,255,90,0.06);color:#fff0d6}
-  .slot .glow{position:absolute;inset:0;border-radius:12px;pointer-events:none;opacity:0;transition:opacity .3s}
-  .slot.free .glow{background:radial-gradient(400px 120px at 20% 10%, rgba(123,240,106,0.06), transparent 20%);opacity:1}
-  .slot.occ .glow{background:radial-gradient(400px 120px at 80% 90%, rgba(233,255,90,0.06), transparent 20%);opacity:1}
-  .slot .btn{margin-top:10px;padding:9px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700;background:var(--accent-grad);color:#022}
+  .slot:hover{transform:translateY(-8px);box-shadow:0 30px 80px rgba(2,6,10,0.7)}
+  .slot .title{font-weight:700;font-size:16px}
+  .slot .meta{color:var(--muted);font-size:12px;margin-top:8px}
+  .slot .action{margin-top:10px}
+
+  /* rainbow border animation */
+  .slot::before{
+    content:"";position:absolute;inset:-2px;border-radius:14px;padding:2px;
+    background:conic-gradient(from 0deg, #ff3b3b, #ff893b, #ffd43b, #8cff3b, #3bffb1, #3bf0ff, #3b68ff, #af3bff, #ff3bd1);
+    z-index:0;filter:blur(8px);opacity:.85;
+    transform:scale(0.98);
+    transition:opacity .35s, transform .35s;
+    mix-blend-mode:screen;
+  }
+  .slot .inner{
+    position:relative;z-index:1;border-radius:10px;padding:10px;background:rgba(0,0,0,0.18);
+  }
+  .slot:hover::before{transform:scale(1);opacity:1}
+
+  /* states with bright fills */
+  .slot.free .inner{background:linear-gradient(180deg, rgba(123,240,106,0.06), rgba(233,255,90,0.03));color:#071205}
+  .slot.occ .inner{background:linear-gradient(180deg, rgba(255,59,91,0.06), rgba(255,157,59,0.03));color:#2b0a07}
+
+  /* confetti flash */
+  @keyframes confetti {
+    0%{opacity:0;transform:translateY(-6px) rotate(-6deg)}
+    30%{opacity:1;transform:translateY(0) rotate(6deg)}
+    100%{opacity:0;transform:translateY(6px) rotate(12deg)}
+  }
+  .confetti-piece{position:absolute;width:6px;height:10px;border-radius:2px;opacity:0;z-index:2;pointer-events:none}
+
+  /* buttons & controls */
+  .controls{display:flex;flex-direction:column;gap:12px}
+  .btn-primary{padding:10px 14px;border-radius:12px;border:none;background:linear-gradient(90deg,#ff3b3b,#ffd43b,#3bf0ff);color:#081018;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.03);padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer}
   .legend{display:flex;gap:12px;align-items:center;margin-top:12px}
   .dot{width:12px;height:12px;border-radius:50%}
-  .dot.free{background:var(--accent1);box-shadow:0 6px 18px rgba(123,240,106,0.12)}
-  .dot.occ{background:var(--accent2);box-shadow:0 6px 18px rgba(233,255,90,0.12)}
+
   .small{font-size:13px;color:var(--muted)}
-  .btn-row{display:flex;gap:8px;margin-top:10px}
-  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.03);padding:8px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
-  .pulse { box-shadow: 0 0 0 0 rgba(123,240,106,0.12); animation: pulse 2s infinite; border-radius:999px;}
-  @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(123,240,106,0.16); }
-    70% { box-shadow: 0 0 0 18px rgba(123,240,106,0); }
-    100% { box-shadow: 0 0 0 0 rgba(123,240,106,0); }
+
+  /* micro sparkle when update occurs */
+  @keyframes sparkle {
+    from { opacity: 0; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.05); }
+    to { opacity: 0; transform: scale(1.15); }
   }
+  .sparkle{position:absolute;right:10px;top:8px;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#fff,#ffd700);opacity:0;z-index:2}
+
   @media(max-width:980px){ main{grid-template-columns:1fr} .grid{grid-template-columns:repeat(2,1fr)} }
 </style>
 </head>
@@ -68,11 +91,11 @@
   <div class="wrap">
     <header>
       <div>
-        <h1>SmartCloudPark</h1>
-        <div class="sub">Fresh & lively — Real-time parking availability</div>
+        <h1>SmartCloudPark — Rainbow Festival</h1>
+        <div class="sub">Eye-catching realtime parking dashboard</div>
       </div>
       <div class="top-stats">
-        <div class="stat pulse"><div class="small">Free</div><strong id="freeCount">0</strong></div>
+        <div class="stat"><div class="small">Free</div><strong id="freeCount">0</strong></div>
         <div class="stat"><div class="small">Occupied</div><strong id="occCount">0</strong></div>
       </div>
     </header>
@@ -80,40 +103,39 @@
     <main>
       <section class="card">
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-weight:700">Live Parking Map</div>
-          <div class="small">Click a slot to toggle it • Bright green/yellow theme</div>
+          <div style="font-weight:700">Live Parking Grid</div>
+          <div class="small">Click a slot to toggle — festival visuals on updates</div>
         </div>
 
         <div id="grid" class="grid" aria-live="polite"></div>
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
           <div class="legend">
-            <div class="dot free"></div><div class="small">Available</div>
-            <div class="dot occ"></div><div class="small">Occupied</div>
+            <div class="dot" style="background:linear-gradient(90deg,#7bf06a,#e9ff5a)"></div><div class="small">Available</div>
+            <div class="dot" style="background:linear-gradient(90deg,#ff3b3b,#ff893b)"></div><div class="small">Occupied</div>
           </div>
-          <div class="small">Realtime via Supabase</div>
+          <div class="small">Realtime via Supabase Realtime</div>
         </div>
       </section>
 
       <aside class="card">
         <div style="font-weight:700">Controls & Quick Actions</div>
         <div style="margin-top:12px">
-          <div class="btn-row">
-            <button id="refreshBtn" class="btn-ghost">Refresh</button>
-            <a id="openSim" href="/simulator.html" class="btn-ghost" target="_blank">Open Simulator</a>
-          </div>
+          <div class="controls">
+            <div style="display:flex;gap:8px">
+              <button id="refreshBtn" class="btn-ghost">Refresh</button>
+              <a id="openSim" href="/simulator.html" class="btn-ghost" target="_blank">Open Simulator</a>
+            </div>
 
-          <div style="margin-top:12px">
-            <div class="small">Bulk tasks</div>
-            <div class="btn-row" style="margin-top:8px">
+            <div style="display:flex;gap:8px;margin-top:8px">
               <button id="freeAll" class="btn-ghost">Mark all free</button>
               <button id="occAll" class="btn-ghost">Mark all occupied</button>
             </div>
-          </div>
 
-          <div style="margin-top:12px">
-            <div class="small">Details</div>
-            <div id="details" style="margin-top:8px;color:var(--muted);font-size:13px">Realtime count & latest updates here.</div>
+            <div style="margin-top:12px">
+              <div class="small">Details</div>
+              <div id="details" style="margin-top:8px;color:var(--muted);font-size:13px">Realtime count & updates appear here.</div>
+            </div>
           </div>
         </div>
       </aside>
@@ -121,12 +143,13 @@
   </div>
 
 <script type="module">
-/* CONFIG - hard-coded demo keys (keep anon key only) */
+/* ========== CONFIG (your public demo anon key only) ========== */
 const SUPABASE_URL = 'https://ipzpjtoyicberwrvdpgd.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwenBqdG95aWNiZXJ3cnZkcGdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyODE2NDgsImV4cCI6MjA3ODg1NzY0OH0.IRr_e6X8E49caJEIZGvHTZleLxMyxwXGkHyoDJjzWK4';
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+/* UI refs */
 const gridEl = document.getElementById('grid');
 const freeCountEl = document.getElementById('freeCount');
 const occCountEl = document.getElementById('occCount');
@@ -138,8 +161,35 @@ const details = document.getElementById('details');
 let slotsCache = [];
 let lastFlashId = null;
 
+/* helper */
 function humanTime(ts){ try{ return new Date(ts).toLocaleTimeString(); }catch(e){ return '-' } }
 
+/* render helpers including random rainbow tint per slot index */
+const RAINBOWS = [
+  'linear-gradient(90deg,#FF3B3B,#FF893B)',
+  'linear-gradient(90deg,#FFD43B,#E9FF5A)',
+  'linear-gradient(90deg,#7BF06A,#3BFFB1)',
+  'linear-gradient(90deg,#3BF0FF,#3B68FF)',
+  'linear-gradient(90deg,#AF3BFF,#FF3BD1)',
+  'linear-gradient(90deg,#FF5B88,#FF9B3B)'
+];
+
+function makeConfetti(parent){
+  // generate small confetti pieces then animate and remove
+  for(let i=0;i<8;i++){
+    const c = document.createElement('div');
+    c.className='confetti-piece';
+    c.style.left = Math.floor(Math.random()*80)+'%';
+    c.style.top = Math.floor(Math.random()*40)+'%';
+    c.style.background = RAINBOWS[Math.floor(Math.random()*RAINBOWS.length)].split(',')[0].replace('linear-gradient(90deg,','').replace(')','') || '#fff';
+    parent.appendChild(c);
+    c.style.opacity = 0;
+    setTimeout(()=>{ c.style.opacity=1; c.style.animation = 'confetti .9s ease forwards'; }, 30+i*40);
+    setTimeout(()=>c.remove(), 1200);
+  }
+}
+
+/* render and flash */
 async function fetchSlots(){
   const { data, error } = await supabase.from('parking_slots').select('*').order('slot_id', { ascending: true });
   if(error){ console.error(error); details.textContent = 'Error loading slots'; return; }
@@ -148,26 +198,52 @@ async function fetchSlots(){
 }
 
 function flashDom(el){
-  el.style.transform = 'scale(1.02)';
-  el.style.boxShadow = '0 26px 60px rgba(2,8,6,0.6)';
-  setTimeout(()=>{ el.style.transform=''; el.style.boxShadow=''; }, 500);
+  el.style.transform = 'translateY(-6px) scale(1.02)';
+  el.style.boxShadow = '0 40px 90px rgba(0,0,0,0.7)';
+  setTimeout(()=>{ el.style.transform=''; el.style.boxShadow=''; }, 420);
 }
 
 function renderSlots(){
   gridEl.innerHTML = '';
   let free=0, occ=0;
   let latest=null;
-  slotsCache.forEach(s=>{
-    const div = document.createElement('div');
-    div.className = 'slot ' + (s.occupied ? 'occ' : 'free');
-    div.innerHTML = `<div class="id">Slot ${s.slot_id}</div>
-                     <div class="meta">${s.occupied ? 'Occupied' : 'Available'}</div>
-                     <div class="meta" style="margin-top:8px">${humanTime(s.last_updated)}</div>
-                     <div class="glow"></div>
-                     <div><button class="btn" onclick="toggleSlot(${s.slot_id}, ${s.occupied})">${s.occupied ? 'Free it' : 'Occupy'}</button></div>`;
-    gridEl.appendChild(div);
+  slotsCache.forEach((s, idx)=>{
+    const outer = document.createElement('div');
+    outer.className = 'slot ' + (s.occupied ? 'occ' : 'free');
 
-    if(lastFlashId === s.slot_id){ flashDom(div); lastFlashId = null; }
+    // pick a rainbow border slice for the pseudo-element effect by inlining a faint outer wrapper
+    const inner = document.createElement('div');
+    inner.className = 'inner';
+    inner.innerHTML = `<div class="title">Slot ${s.slot_id}</div>
+                       <div class="meta">${s.occupied ? 'Occupied' : 'Available'}</div>
+                       <div class="meta" style="margin-top:8px">${humanTime(s.last_updated)}</div>
+                       <div class="action"><button class="btn-ghost" onclick="toggleSlot(${s.slot_id}, ${s.occupied})">${s.occupied ? 'Free it' : 'Occupy'}</button></div>
+                       <div class="sparkle" style="display:none"></div>`;
+
+    outer.appendChild(inner);
+
+    // add confetti placeholder
+    // small color accent bar
+    const accent = document.createElement('div');
+    accent.style.position='absolute';
+    accent.style.left='0'; accent.style.bottom='0'; accent.style.height='6px';
+    accent.style.width='100%';
+    accent.style.zIndex='0';
+    accent.style.opacity='0.9';
+    accent.style.background = RAINBOWS[idx % RAINBOWS.length];
+    outer.appendChild(accent);
+
+    gridEl.appendChild(outer);
+
+    if(lastFlashId === s.slot_id){
+      // create confetti and sparkle
+      makeConfetti(outer);
+      const sp = inner.querySelector('.sparkle');
+      sp.style.display='block'; sp.style.animation='sparkle .9s ease both';
+      setTimeout(()=>sp.style.display='none', 900);
+      flashDom(outer);
+      lastFlashId = null;
+    }
 
     s.occupied ? occ++ : free++;
     latest = s.last_updated || latest;
@@ -177,15 +253,14 @@ function renderSlots(){
   details.textContent = `Showing ${slotsCache.length} slots • Free: ${free} • Occupied: ${occ}`;
 }
 
+/* toggle slot */
 window.toggleSlot = async function(slotId, occupied){
   await supabase.from('parking_slots').update({ occupied: !occupied, last_updated: new Date().toISOString() }).eq('slot_id', slotId);
   lastFlashId = slotId;
   fetchSlots();
 };
 
-refreshBtn.addEventListener('click', fetchSlots);
-document.getElementById('openSim').addEventListener('click', ()=>{});
-
+/* bulk actions */
 document.getElementById('freeAll').addEventListener('click', async ()=>{
   await Promise.all((slotsCache||[]).map(s=> supabase.from('parking_slots').update({ occupied:false, last_updated:new Date().toISOString() }).eq('slot_id', s.slot_id)));
   fetchSlots();
@@ -194,6 +269,8 @@ document.getElementById('occAll').addEventListener('click', async ()=>{
   await Promise.all((slotsCache||[]).map(s=> supabase.from('parking_slots').update({ occupied:true, last_updated:new Date().toISOString() }).eq('slot_id', s.slot_id)));
   fetchSlots();
 });
+
+refreshBtn.addEventListener('click', fetchSlots);
 
 /* realtime subscription — flash updated row */
 supabase
@@ -207,6 +284,7 @@ supabase
   })
   .subscribe();
 
+/* initial load */
 fetchSlots();
 </script>
 </body>

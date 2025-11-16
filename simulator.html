@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SmartCloudPark — Web Simulator</title>
+
+<!-- Minimal reset + nice modern styling -->
+<style>
+  :root{
+    --bg:#071826; --card:#0f1f2a; --muted:#98aebb; --accent:#35d07f; --danger:#ff6b6b; --glass: rgba(255,255,255,0.03);
+    --glass-2: rgba(255,255,255,0.02); --shadow: 0 10px 30px rgba(2,6,23,0.6);
+  }
+  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;background:
+    linear-gradient(180deg,#041218 0%, #071826 100%);color:#eaf6ff}
+  .wrap{max-width:1100px;margin:28px auto;padding:20px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  h1{font-size:20px;margin:0}
+  .sub{color:var(--muted);font-size:13px}
+  .grid{display:grid;grid-template-columns:1fr 380px;gap:20px;margin-top:18px}
+  .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.02)}
+  .controls{display:flex;flex-direction:column;gap:12px}
+  .row{display:flex;gap:10px;align-items:center}
+  label{color:var(--muted);font-size:13px;min-width:110px}
+  input[type=range]{width:100%}
+  button.primary{background:linear-gradient(180deg,var(--accent),#1fbf69);color:#022;border:none;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;box-shadow:0 6px 14px rgba(24,110,69,0.15)}
+  button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
+  .status{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--glass);font-weight:600;color:var(--muted);font-size:13px}
+  .map{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:12px}
+  .slot{padding:14px;border-radius:10px;text-align:center;background:linear-gradient(180deg,#052e1a,#06361f);min-height:86px;display:flex;flex-direction:column;justify-content:space-between}
+  .slot.occ{background:linear-gradient(180deg,#3a0f14,#2b0510)}
+  .slot .id{font-weight:800}
+  .slot .meta{color:var(--muted);font-size:12px}
+  .log{height:300px;overflow:auto;background:var(--glass-2);padding:12px;border-radius:8px;font-family:monospace;color:#d8f3e4}
+  .footer{margin-top:12px;color:var(--muted);font-size:13px}
+  .topcontrols{display:flex;gap:8px;align-items:center}
+  .kpi{display:flex;gap:10px;align-items:center}
+  .chip{background:rgba(255,255,255,0.03);padding:8px 12px;border-radius:10px;font-weight:700}
+  @media(max-width:980px){ .grid{grid-template-columns:1fr} .map{grid-template-columns:repeat(2,1fr)} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>SmartCloudPark — Web Simulator</h1>
+        <div class="sub">Start/Stop simulated IoT devices from the browser — live updates to your cloud dashboard.</div>
+      </div>
+      <div class="topcontrols">
+        <div class="kpi">
+          <div class="chip" id="runningChip">Stopped</div>
+          <div class="chip" id="devicesChip">Devices: 10</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid" style="margin-top:18px">
+      <!-- LEFT: Simulator controls + map -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700">Simulator Controls</div>
+          <div class="sub">Runs in browser using your Supabase anon key</div>
+        </div>
+
+        <div class="controls" style="margin-top:12px">
+          <div class="row">
+            <label>State</label>
+            <button class="primary" id="startBtn">Start Simulation</button>
+            <button class="ghost" id="stopBtn">Stop</button>
+          </div>
+
+          <div class="row">
+            <label>Devices</label>
+            <input id="deviceCount" type="number" min="1" max="100" value="10" style="width:80px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text)">
+            <div class="sub" style="margin-left:8px">Number of virtual sensors</div>
+          </div>
+
+          <div class="row">
+            <label>Interval</label>
+            <input id="intervalRange" type="range" min="500" max="8000" step="100" value="3000">
+            <div class="sub" id="intervalLabel">3.0 s</div>
+          </div>
+
+          <div class="row">
+            <label>Behavior</label>
+            <select id="modeSelect" style="padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--text)">
+              <option value="random">Random toggle</option>
+              <option value="sequential">Sequential walk</option>
+              <option value="burst">Burst changes</option>
+            </select>
+          </div>
+
+          <div class="row">
+            <label>Visual logs</label>
+            <button class="ghost" id="clearLog">Clear</button>
+          </div>
+
+        </div>
+
+        <hr style="border:none;height:1px;background:rgba(255,255,255,0.02);margin:14px 0">
+
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700">Parking Map</div>
+          <div class="sub">Click any slot to toggle manually</div>
+        </div>
+
+        <div class="map" id="mapArea" style="margin-top:12px"></div>
+
+      </div>
+
+      <!-- RIGHT: Logs and live stats -->
+      <div>
+        <div class="card" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700">Live Activity</div>
+            <div class="sub">Real-time events sent to Supabase</div>
+          </div>
+          <div class="log" id="logArea" style="margin-top:12px">No activity yet.</div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <div class="sub">Total events sent:</div><div id="eventsCounter" class="chip">0</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-weight:700">Quick Links</div>
+          <div class="sub" style="margin-top:8px">Open the main dashboard to watch slot visuals change in realtime.</div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <a id="dashboardLink" class="ghost" href="#" target="_blank">Open Dashboard</a>
+            <button id="visitTable" class="ghost">Open Supabase Table</button>
+          </div>
+          <div class="footer" style="margin-top:10px">Tip: Use smaller interval (≥1000ms) for demo clarity. Very small intervals may flood logs.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script type="module">
+/* ========== CONFIG ========== */
+/* Your Supabase project settings (hard-coded for demo) */
+const SUPABASE_URL = 'https://ipzpjtoyicberwrvdpgd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwenBqdG95aWNiZXJ3cnZkcGdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyODE2NDgsImV4cCI6MjA3ODg1NzY0OH0.IRr_e6X8E49caJEIZGvHTZleLxMyxwXGkHyoDJjzWK4';
+/* ============================ */
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+/* UI refs */
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
+const clearLog = document.getElementById('clearLog');
+const logArea = document.getElementById('logArea');
+const eventsCounter = document.getElementById('eventsCounter');
+const runningChip = document.getElementById('runningChip');
+const devicesChip = document.getElementById('devicesChip');
+const deviceCount = document.getElementById('deviceCount');
+const intervalRange = document.getElementById('intervalRange');
+const intervalLabel = document.getElementById('intervalLabel');
+const mapArea = document.getElementById('mapArea');
+const modeSelect = document.getElementById('modeSelect');
+const dashboardLink = document.getElementById('dashboardLink');
+const visitTable = document.getElementById('visitTable');
+
+let running = false;
+let timerIds = [];
+let eventsSent = 0;
+let slotsCache = [];
+const TOTAL_SLOTS = 10;
+
+/* init UI */
+deviceCount.value = TOTAL_SLOTS;
+devicesChip.textContent = `Devices: ${deviceCount.value}`;
+intervalLabel.textContent = `${(intervalRange.value/1000).toFixed(1)} s`;
+dashboardLink.href = window.location.origin; // main site
+visitTable.onclick = () => { window.open(`${SUPABASE_URL}/project/_/table/parking_slots`); };
+
+/* fetch initial slots and render */
+async function loadSlots(){
+  const { data, error } = await supabase.from('parking_slots').select('*').order('slot_id', { ascending: true });
+  if(error){ log('Error loading slots: '+(error.message||JSON.stringify(error))); return; }
+  slotsCache = data || [];
+  renderMap();
+}
+function renderMap(){
+  mapArea.innerHTML = '';
+  for(let i=1;i<=TOTAL_SLOTS;i++){
+    const row = slotsCache.find(s=>s.slot_id===i) || { slot_id:i, occupied:false, last_updated: new Date().toISOString() };
+    const div = document.createElement('div');
+    div.className = 'slot' + (row.occupied ? ' occ' : '');
+    div.innerHTML = `<div class="id">Slot ${row.slot_id}</div><div class="meta">${row.occupied?'Occupied':'Available'}</div><div class="meta" style="margin-top:6px;font-size:12px">${new Date(row.last_updated).toLocaleTimeString()}</div>`;
+    div.onclick = () => manualToggle(row.slot_id, !!row.occupied);
+    mapArea.appendChild(div);
+  }
+}
+
+/* small logger */
+function log(txt){
+  const line = `[${new Date().toLocaleTimeString()}] ${txt}`;
+  if(logArea.textContent.trim()==='No activity yet.') logArea.textContent = '';
+  logArea.textContent = line + "\n" + logArea.textContent;
+  eventsSent++; eventsCounter.textContent = eventsSent;
+}
+
+/* manual toggle via UI */
+async function manualToggle(slotId, occupied){
+  try{
+    await supabase.from('parking_slots').update({ occupied: !occupied, last_updated: new Date().toISOString() }).eq('slot_id', slotId);
+    log(`Manual toggle slot ${slotId} -> ${!occupied ? 'occupied':'free'}`);
+    await loadSlots();
+  }catch(e){ log('Manual update failed'); console.error(e); }
+}
+
+/* simulate one event: pick slot and set state */
+async function simulateOnce(slotId, occupied){
+  try{
+    await supabase.from('parking_slots').update({ occupied, last_updated: new Date().toISOString() }).eq('slot_id', slotId);
+    log(`Simulated slot ${slotId} -> ${occupied ? 'occupied':'free'}`);
+    await loadSlots();
+  }catch(e){ log('Sim error'); console.error(e); }
+}
+
+/* start simulation loops according to mode */
+function startSimulation(){
+  if(running) return;
+  running = true;
+  runningChip.textContent = 'Running';
+  runningChip.style.background = 'linear-gradient(90deg,#06361f,#1fa06b)';
+  deviceCount.disabled = true;
+
+  const count = parseInt(deviceCount.value,10) || 10;
+  devicesChip.textContent = `Devices: ${count}`;
+  const interval = parseInt(intervalRange.value,10) || 3000;
+  const mode = modeSelect.value;
+
+  if(mode === 'random'){
+    // spawn count intervals that update random slots
+    for(let i=0;i<count;i++){
+      const id = setInterval(async ()=>{
+        const slot = Math.floor(Math.random()*TOTAL_SLOTS)+1;
+        const occupied = Math.random()>0.5;
+        await simulateOnce(slot, occupied);
+      }, interval + Math.floor(Math.random()*800));
+      timerIds.push(id);
+    }
+  } else if(mode === 'sequential'){
+    let cursor = 1;
+    const id = setInterval(async ()=>{
+      const occupied = Math.random()>0.5;
+      await simulateOnce(cursor, occupied);
+      cursor++; if(cursor>TOTAL_SLOTS) cursor=1;
+    }, interval);
+    timerIds.push(id);
+  } else if(mode === 'burst'){
+    const id = setInterval(async ()=>{
+      const burst = Math.max(1, Math.floor(Math.random()*4));
+      for(let j=0;j<burst;j++){
+        const slot = Math.floor(Math.random()*TOTAL_SLOTS)+1;
+        const occupied = Math.random()>0.5;
+        await simulateOnce(slot, occupied);
+      }
+    }, interval);
+    timerIds.push(id);
+  }
+}
+
+/* stop and clear intervals */
+function stopSimulation(){
+  timerIds.forEach(t=>clearInterval(t));
+  timerIds = [];
+  running = false;
+  runningChip.textContent = 'Stopped';
+  runningChip.style.background = '';
+  deviceCount.disabled = false;
+}
+
+/* UI bindings */
+startBtn.onclick = () => { startSimulation(); };
+stopBtn.onclick = () => { stopSimulation(); };
+clearLog.onclick = ()=> { logArea.textContent = 'No activity yet.'; eventsSent = 0; eventsCounter.textContent = 0; };
+deviceCount.onchange = ()=> { devicesChip.textContent = `Devices: ${deviceCount.value}`; };
+intervalRange.oninput = ()=> { intervalLabel.textContent = `${(intervalRange.value/1000).toFixed(1)} s`; };
+
+/* initial load */
+loadSlots();
+
+/* realtime subscription to keep UI in sync when simulator or other clients change DB */
+supabase
+  .channel('public:parking_slots')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'parking_slots' }, payload=>{
+    // payload.record is the changed row — update cache
+    const rec = payload.record;
+    const idx = slotsCache.findIndex(s=>s.slot_id===rec.slot_id);
+    if(idx>=0) slotsCache[idx] = rec;
+    else slotsCache.push(rec);
+    renderMap();
+  })
+  .subscribe();
+
+</script>
+</body>
+</html>

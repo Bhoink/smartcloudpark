@@ -3,66 +3,78 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SmartCloudPark — Live Parking Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>SmartCloudPark — Technical Theme</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-1: #071025; --bg-2:#041223;
-    --card: rgba(255,255,255,0.03); --glass: rgba(255,255,255,0.04);
-    --muted:#9fb0c4; --text:#eaf6ff; --accent1:#67f8c8; --accent2:#3bb6ff;
-    --danger:#ff7a7a; --radius:14px;
+    --bg:#06070a;
+    --panel:#0b0f14;
+    --glass: rgba(255,255,255,0.03);
+    --muted: #9aa9b6;
+    --text: #e6f7ff;
+    --accent1: #00f0ff;    /* electric cyan */
+    --accent2: #ff3cff;    /* magenta highlight */
+    --accent-grad: linear-gradient(90deg,var(--accent1),var(--accent2));
+    --danger: #ff6b6b;
+    --radius:12px;
+    --glass-2: rgba(255,255,255,0.02);
+    --shadow: 0 18px 40px rgba(2,6,12,0.6);
   }
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:
-    radial-gradient(1200px 600px at 10% 10%, rgba(31,78,93,0.12), transparent 10%),
-    linear-gradient(180deg,var(--bg-1),var(--bg-2));color:var(--text);}
-  .wrap{max-width:1100px;margin:28px auto;padding:20px}
+  html,body{height:100%;margin:0;background:
+    radial-gradient(800px 400px at 10% 10%, rgba(0,240,255,0.03), transparent 10%),
+    linear-gradient(180deg,#020305,#06070a);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+  .wrap{max-width:1140px;margin:28px auto;padding:20px}
   header{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  h1{margin:0;font-size:22px;letter-spacing:0.2px}
+  h1{margin:0;font-weight:700;font-family:"Source Code Pro", monospace;letter-spacing:0.6px}
   .sub{color:var(--muted);font-size:13px}
-  .top-stats{display:flex;gap:12px;align-items:center}
-  .stat{background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.02);display:flex;flex-direction:column;align-items:flex-start;min-width:120px}
-  .stat strong{font-size:18px;display:block}
-  main{margin-top:18px;display:grid;grid-template-columns:1fr 350px;gap:18px}
-  .card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,0.02);box-shadow:0 10px 30px rgba(2,8,20,0.5)}
-  .controls{display:flex;flex-direction:column;gap:12px}
+  .topbar{display:flex;gap:12px;align-items:center}
+  .kpi{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.02);min-width:120px}
+  .kpi strong{display:block;font-size:18px}
+  main{margin-top:18px;display:grid;grid-template-columns:1fr 380px;gap:18px}
+  .card{background:var(--panel);padding:16px;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.02)}
+  /* grid of slots */
   .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:12px}
   .slot{
-    background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
-    border-radius:12px;padding:12px;text-align:center;min-height:110px;display:flex;flex-direction:column;justify-content:space-between;
-    transition: transform .25s ease, box-shadow .25s ease, background .3s ease;
-    border:1px solid rgba(255,255,255,0.02);
-    will-change:transform;
+    position:relative;
+    border-radius:10px;padding:12px;min-height:110px;
+    background:linear-gradient(180deg,rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+    border:1px solid rgba(255,255,255,0.03);
+    transition:transform .22s ease, box-shadow .22s ease, border-color .22s;
+    overflow:hidden;
   }
-  .slot:hover{transform:translateY(-6px);box-shadow:0 16px 36px rgba(13,37,60,0.5)}
-  .slot .id{font-weight:700;font-size:16px}
-  .slot .meta{color:var(--muted);font-size:13px}
-  .slot.free{background:linear-gradient(180deg,#04281b,#063225);color:#bfffe8;border:1px solid rgba(59,186,129,0.12)}
-  .slot.occ{background:linear-gradient(180deg,#3b0f17,#2a0710);color:#ffd6d6;border:1px solid rgba(255,120,120,0.08)}
-  .btn{padding:8px 10px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#022;font-weight:700;cursor:pointer}
-  .small{font-size:13px;color:var(--muted)}
-  .footer{margin-top:12px;color:var(--muted);font-size:13px}
-  .searchbar{display:flex;gap:8px;align-items:center}
-  .searchbar input{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:var(--text);min-width:220px}
-  .map-legend{display:flex;gap:8px;align-items:center;margin-top:10px}
-  .legend-item{display:flex;gap:8px;align-items:center}
+  .slot:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(2,10,20,0.6)}
+  .slot .title{font-family:"Source Code Pro", monospace;font-weight:600;font-size:15px}
+  .slot .meta{color:var(--muted);font-size:12px;margin-top:8px}
+  .slot .btn{margin-top:10px;padding:8px 10px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
+  /* states */
+  .slot.free{background:linear-gradient(180deg,#021f25,#07262b);box-shadow:inset 0 1px 0 rgba(255,255,255,0.02);border:1px solid rgba(0,240,255,0.06)}
+  .slot.occ{background:linear-gradient(180deg,#2b0810,#1f0308);border:1px solid rgba(255,60,120,0.06)}
+  .slot .glow{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .35s}
+  .slot.free .glow{background:radial-gradient(400px 120px at 20% 10%, rgba(0,240,255,0.06), transparent 20%);opacity:1}
+  .slot.occ .glow{background:radial-gradient(400px 120px at 80% 90%, rgba(255,60,120,0.06), transparent 20%);opacity:1}
+  /* animated border line */
+  .slot::after{
+    content:"";position:absolute;left:-120%;top:0;width:240%;height:3px;background:linear-gradient(90deg,transparent,var(--accent1),var(--accent2),transparent);transform:translateY(-24px);opacity:0;transition:all .35s;
+  }
+  .slot:hover::after{transform:translateY(8px);opacity:0.95}
+  /* right column */
+  .controls{display:flex;flex-direction:column;gap:12px}
+  .btn-accent{background:var(--accent-grad);color:#021;border-radius:10px;padding:10px 12px;border:none;cursor:pointer;font-weight:700}
+  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
+  .legend{display:flex;gap:10px;align-items:center;margin-top:12px}
   .dot{width:12px;height:12px;border-radius:50%}
-  .dot.free{background:linear-gradient(90deg,#3bffc8,#1fd88f)}
-  .dot.occ{background:linear-gradient(90deg,#ff9b9b,#ff6b6b)}
-  /* animations */
-  @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(103,248,200,0.18); }
-    70% { box-shadow: 0 0 0 18px rgba(103,248,200,0); }
-    100% { box-shadow: 0 0 0 0 rgba(103,248,200,0); }
+  .dot.free{background:var(--accent1);box-shadow:0 0 10px rgba(0,240,255,0.12)}
+  .dot.occ{background:#ff6b9a;box-shadow:0 0 10px rgba(255,60,120,0.12)}
+  .small{font-size:13px;color:var(--muted)}
+  /* flash animation when record updates */
+  @keyframes flash {
+    0%{opacity:0.12; transform:scale(0.995)}
+    50%{opacity:0.28;transform:scale(1.006)}
+    100%{opacity:0}
   }
-  .kpiPulse{animation:pulse 2s infinite;}
-
-  @media (max-width:980px){
-    main{grid-template-columns:1fr}
-    .grid{grid-template-columns:repeat(2,1fr)}
-  }
+  .flash-hit{animation:flash .9s ease both}
+  @media(max-width:980px){ main{grid-template-columns:1fr} .grid{grid-template-columns:repeat(2,1fr)} }
 </style>
 </head>
 <body>
@@ -70,90 +82,87 @@
     <header>
       <div>
         <h1>SmartCloudPark</h1>
-        <div class="sub">Real-time parking availability — Supabase + Vercel</div>
+        <div class="sub">Technical theme — realtime cloud parking</div>
       </div>
-      <div class="top-stats">
-        <div class="stat">
-          <div class="small">Free</div>
-          <strong id="freeCount">0</strong>
-        </div>
-        <div class="stat">
-          <div class="small">Occupied</div>
-          <strong id="occCount">0</strong>
-        </div>
-        <div class="stat kpiPulse" id="lastUpdatedCard">
-          <div class="small">Last update</div>
-          <strong id="lastUpdated">-</strong>
-        </div>
+      <div class="topbar">
+        <div class="kpi"><div class="small">Free</div><strong id="freeCount">0</strong></div>
+        <div class="kpi"><div class="small">Occupied</div><strong id="occCount">0</strong></div>
+        <div class="kpi"><div class="small">Last</div><strong id="lastUpdated">-</strong></div>
       </div>
     </header>
 
     <main>
       <section class="card">
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-weight:700">Live Parking Map</div>
-          <div class="small">Click a slot to toggle it</div>
+          <div style="font-weight:700">Live Parking Grid</div>
+          <div class="small">Hover slots for action • Click to toggle</div>
         </div>
 
-        <div class="grid" id="grid"></div>
+        <div id="grid" class="grid" aria-live="polite"></div>
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
-          <div class="map-legend">
-            <div class="legend-item"><div class="dot free"></div><div class="small">Available</div></div>
-            <div class="legend-item"><div class="dot occ"></div><div class="small">Occupied</div></div>
+          <div class="legend">
+            <div class="dot free"></div><div class="small">Available</div>
+            <div class="dot occ" style="margin-left:10px"></div><div class="small">Occupied</div>
           </div>
-          <div class="small">Slots auto-refresh via Supabase Realtime</div>
+          <div class="small">Realtime via Supabase Realtime</div>
         </div>
       </section>
 
       <aside class="card">
-        <div style="font-weight:700">Controls & Details</div>
-        <div style="margin-top:12px" class="controls">
-          <div style="display:flex;gap:10px">
-            <button class="btn" id="refreshBtn">Refresh</button>
-            <a class="btn" id="openSim" href="/simulator.html" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">Open Simulator</a>
+        <div style="font-weight:700">Controls & quick tasks</div>
+        <div class="controls">
+          <div style="display:flex;gap:8px;">
+            <button id="refreshBtn" class="btn-accent">Refresh</button>
+            <a href="/simulator.html" target="_blank" class="btn-ghost" style="display:inline-flex;align-items:center;justify-content:center">Open Simulator</a>
           </div>
 
-          <div style="margin-top:10px">
-            <div class="small">Quick actions</div>
+          <div style="margin-top:10px"><div class="small">Bulk updates</div>
             <div style="display:flex;gap:8px;margin-top:8px">
-              <button class="btn" id="freeAll">Mark all free</button>
-              <button class="btn" id="occAll">Mark all occupied</button>
+              <button class="btn-accent" id="freeAll">Free all</button>
+              <button class="btn-accent" id="occAll">Occupy all</button>
             </div>
           </div>
 
-          <div style="margin-top:14px">
+          <div style="margin-top:12px">
             <div class="small">Details</div>
-            <div id="details" style="margin-top:8px;color:var(--muted);font-size:13px">Realtime count & latest updates appear here.</div>
+            <div id="details" style="margin-top:8px;color:var(--muted);font-size:13px">Realtime counts & last updates appear here.</div>
           </div>
         </div>
       </aside>
     </main>
-
-    <div class="footer">Tip: Use the simulator page to start/stop virtual sensors during demo.</div>
   </div>
 
 <script type="module">
-/* CONFIG - your project values (hard-coded for demo) */
+/* CONFIG - hard-coded for demo */
 const SUPABASE_URL = 'https://ipzpjtoyicberwrvdpgd.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwenBqdG95aWNiZXJ3cnZkcGdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyODE2NDgsImV4cCI6MjA3ODg1NzY0OH0.IRr_e6X8E49caJEIZGvHTZleLxMyxwXGkHyoDJjzWK4';
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* UI */
+/* UI refs */
 const gridEl = document.getElementById('grid');
 const freeCountEl = document.getElementById('freeCount');
 const occCountEl = document.getElementById('occCount');
 const lastUpdatedEl = document.getElementById('lastUpdated');
 const refreshBtn = document.getElementById('refreshBtn');
-const details = document.getElementById('details');
 const freeAllBtn = document.getElementById('freeAll');
 const occAllBtn = document.getElementById('occAll');
+const details = document.getElementById('details');
 
 let slotsCache = [];
+let lastFlashId = null;
 
-function humanTime(ts){ try{ return new Date(ts).toLocaleTimeString(); }catch(e){ return '-' } }
+/* utilities */
+function humanTime(ts){ try{ return new Date(ts).toLocaleTimeString(); }catch(e){ return '-'; } }
+function flashSlotDom(slotDom){
+  slotDom.classList.remove('flash-hit');
+  // force reflow
+  void slotDom.offsetWidth;
+  slotDom.classList.add('flash-hit');
+}
 
+/* fetch + render */
 async function fetchSlots(){
   const { data, error } = await supabase.from('parking_slots').select('*').order('slot_id', { ascending: true });
   if(error){ console.error(error); details.textContent = 'Error loading slots'; return; }
@@ -163,17 +172,24 @@ async function fetchSlots(){
 
 function renderSlots(){
   gridEl.innerHTML = '';
-  let free=0, occ=0;
-  let latest = '-';
+  let free = 0, occ = 0;
+  let latest = null;
   slotsCache.forEach(s=>{
     const el = document.createElement('div');
-    const cls = s.occupied ? 'occ' : 'free';
     el.className = 'slot ' + (s.occupied ? 'occ' : 'free');
-    el.innerHTML = `<div class="id">Slot ${s.slot_id}</div>
-                    <div class="meta">${s.occupied? 'Occupied':'Available'}</div>
+    el.innerHTML = `<div class="title">Slot ${s.slot_id}</div>
+                    <div class="meta">${s.occupied ? 'Occupied' : 'Available'}</div>
                     <div class="meta" style="margin-top:8px">${humanTime(s.last_updated)}</div>
-                    <div style="margin-top:10px"><button class="btn" onclick="toggleSlot(${s.slot_id}, ${s.occupied})">${s.occupied? 'Free it' : 'Occupy'}</button></div>`;
+                    <div class="glow"></div>
+                    <div style="margin-top:10px"><button class="btn" onclick="toggleSlot(${s.slot_id}, ${s.occupied})">${s.occupied ? 'Free it' : 'Occupy'}</button></div>`;
     gridEl.appendChild(el);
+
+    // if this was the last updated row, flash it
+    if(lastFlashId === s.slot_id){
+      flashSlotDom(el);
+      lastFlashId = null;
+    }
+
     s.occupied ? occ++ : free++;
     latest = s.last_updated || latest;
   });
@@ -183,16 +199,17 @@ function renderSlots(){
   details.textContent = `Showing ${slotsCache.length} slots • Free: ${free} • Occupied: ${occ}`;
 }
 
-// Toggle slot (exposed to button)
+/* toggle slot */
 window.toggleSlot = async function(slotId, occupied){
   await supabase.from('parking_slots').update({ occupied: !occupied, last_updated: new Date().toISOString() }).eq('slot_id', slotId);
-  // optimistic UI refresh: update local cache and rerender quickly
+  // optimistic local update:
   const idx = slotsCache.findIndex(s=>s.slot_id===slotId);
   if(idx>=0) slotsCache[idx].occupied = !occupied;
-  fetchSlots();
+  lastFlashId = slotId;
+  renderSlots();
 };
 
-// Bulk actions
+/* bulk */
 freeAllBtn.addEventListener('click', async ()=>{
   await Promise.all((slotsCache||[]).map(s=> supabase.from('parking_slots').update({ occupied:false, last_updated:new Date().toISOString() }).eq('slot_id', s.slot_id)));
   fetchSlots();
@@ -203,19 +220,25 @@ occAllBtn.addEventListener('click', async ()=>{
 });
 
 refreshBtn.addEventListener('click', fetchSlots);
-document.getElementById('openSim').addEventListener('click', ()=>{/* noop, link target opens */});
 
-// Realtime subscription
+/* realtime: listen to changes and flash updated row */
 supabase
   .channel('public:parking_slots')
   .on('postgres_changes', { event: '*', schema: 'public', table: 'parking_slots' }, payload => {
-    // quick approach: re-fetch
-    fetchSlots();
+    // payload.record is new state
+    const rec = payload.record;
+    lastFlashId = rec.slot_id;
+    // quick merge into cache if present
+    const idx = slotsCache.findIndex(s=>s.slot_id===rec.slot_id);
+    if(idx>=0) slotsCache[idx] = rec;
+    else slotsCache.push(rec);
+    renderSlots();
   })
   .subscribe();
 
-// initial fetch
+/* initial */
 fetchSlots();
 </script>
 </body>
 </html>
+

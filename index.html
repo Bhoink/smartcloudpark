@@ -1,11 +1,118 @@
 <!doctype html>
 <html>
-<head><meta charset="utf-8" /><title>SmartCloudPark</title></head>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SmartCloudPark — Live Parking Dashboard</title>
+<style>
+  :root{--bg:#06111a;--card:#0f1724;--text:#e6eef8;--muted:#9fb0c4;--accent:#22c55e;--danger:#ff6b6b}
+  body{font-family:system-ui,Segoe UI,Helvetica,Arial;background:var(--bg);color:var(--text);margin:0;padding:20px}
+  .wrap{max-width:980px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:center}
+  h1{margin:0;font-size:22px}
+  .small{color:var(--muted);font-size:13px}
+  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:18px}
+  .slot{padding:14px;border-radius:10px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,0.6);min-height:110px}
+  .free{background:linear-gradient(180deg,#052e1a,#06361f);color:#bfffe0}
+  .occ{background:linear-gradient(180deg,#3a0f14,#2b0510);color:#ffd6d6}
+  .meta{margin-top:8px;color:var(--muted);font-size:13px}
+  .stats{margin-top:16px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;gap:12px;align-items:center}
+  button{padding:8px 10px;border-radius:8px;border:none;background:var(--accent);color:#012;cursor:pointer}
+  button.smallbtn{background:rgba(255,255,255,0.04);color:var(--text)}
+  .footer{margin-top:18px;color:var(--muted);font-size:13px}
+  @media(max-width:800px){ .grid{grid-template-columns:repeat(2,1fr)} }
+</style>
+</head>
 <body>
-<h1>SmartCloudPark Dashboard</h1>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>SmartCloudPark — Live Parking Dashboard</h1>
+        <div class="small">Realtime demo using Supabase Realtime</div>
+      </div>
+      <div class="small">Free: <strong id="freeCount">0</strong> • Occupied: <strong id="occCount">0</strong></div>
+    </header>
+
+    <div id="grid" class="grid" aria-live="polite"></div>
+
+    <div class="stats">
+      <div class="small">This demo updates automatically. Use the local simulator to emulate IoT sensors.</div>
+      <div style="margin-left:auto"><button class="smallbtn" id="refreshBtn">Manual refresh</button></div>
+    </div>
+
+    <div class="footer">Note: This demo uses the public <span style="color:var(--muted)">anon</span> key.</div>
+  </div>
+
 <script type="module">
-// full minimal working frontend
-console.log("Replace SUPABASE_URL and SUPABASE_ANON_KEY");
+/* ==== YOUR SUPABASE CONFIG (HARD-CODED) ==== */
+const SUPABASE_URL = 'https://ipzpjtoyicberwrvdpgd.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwenBqdG95aWNiZXJ3cnZkcGdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyODE2NDgsImV4cCI6MjA3ODg1NzY0OH0.IRr_e6X8E49caJEIZGvHTZleLxMyxwXGkHyoDJjzWK4';
+/* =========================================== */
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const gridEl = document.getElementById('grid');
+const freeCountEl = document.getElementById('freeCount');
+const occCountEl = document.getElementById('occCount');
+const refreshBtn = document.getElementById('refreshBtn');
+
+async function fetchSlots(){
+  const { data, error } = await supabase
+    .from('parking_slots')
+    .select('*')
+    .order('slot_id', { ascending: true });
+
+  if(error){
+    console.error('Fetch error', error);
+    gridEl.innerHTML = `<div style="grid-column:1/-1;color:#f7c0c0;padding:16px;border-radius:8px;background:#2b0f0f">Error fetching slots (see console)</div>`;
+    return;
+  }
+  renderSlots(data || []);
+}
+
+function renderSlots(slots){
+  gridEl.innerHTML = '';
+  let free = 0, occ = 0;
+  slots.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'slot ' + (s.occupied ? 'occ' : 'free');
+    div.innerHTML = `
+      <div style="font-weight:700;font-size:18px">Slot ${s.slot_id}</div>
+      <div class="meta">${s.occupied ? 'Occupied' : 'Available'}</div>
+      <div class="meta" style="margin-top:8px">Updated: ${new Date(s.last_updated).toLocaleTimeString()}</div>
+      <div style="margin-top:10px"><button onclick="toggleSlot(${s.slot_id}, ${s.occupied})">${s.occupied ? 'Free it' : 'Occupy'}</button></div>
+    `;
+    gridEl.appendChild(div);
+    s.occupied ? occ++ : free++;
+  });
+  freeCountEl.textContent = free;
+  occCountEl.textContent = occ;
+}
+
+window.toggleSlot = async function(slotId, occupied){
+  await supabase
+    .from('parking_slots')
+    .update({ occupied: !occupied, last_updated: new Date().toISOString() })
+    .eq('slot_id', slotId);
+
+  fetchSlots();
+};
+
+function subscribeRealtime(){
+  supabase
+    .channel('public:parking_slots')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'parking_slots' }, () => fetchSlots())
+    .subscribe();
+}
+
+refreshBtn.addEventListener('click', fetchSlots);
+
+fetchSlots();
+subscribeRealtime();
+
+setInterval(fetchSlots, 10000);
 </script>
 </body>
 </html>

@@ -1,252 +1,108 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SmartCloudPark — Neon Dance Floor</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Source+Code+Pro:wght@600&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SmartCloudPark Dashboard</title>
 <style>
-  :root{
-    --bg-1:#04020a; --bg-2:#0a0320;
-    --muted:#b7c0d5; --text:#f6fbff;
-    --accent-cyan:#3bf0ff; --accent-pink:#ff48c4; --accent-purple:#6b3bff;
-    --radius:14px; --card:rgba(255,255,255,0.02); --shadow: 0 28px 60px rgba(0,0,0,0.6);
+  body {
+    margin: 0;
+    background: #050505;
+    font-family: Arial, sans-serif;
+    color: white;
+    text-align: center;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:
-    radial-gradient(800px 360px at 10% 10%, rgba(59,240,255,0.03), transparent 8%),
-    linear-gradient(180deg,var(--bg-1),var(--bg-2));color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
-  .wrap{max-width:1180px;margin:26px auto;padding:20px}
-  header{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  h1{margin:0;font-family:"Source Code Pro", monospace;letter-spacing:.6px}
-  .sub{color:var(--muted);font-size:13px}
-  .top-stats{display:flex;gap:12px;align-items:center}
-  .stat{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.02)}
-  main{margin-top:18px;display:grid;grid-template-columns:1fr 360px;gap:18px}
-  .card{background:var(--card);border-radius:var(--radius);padding:16px;border:1px solid rgba(255,255,255,0.02);box-shadow:var(--shadow)}
-  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:14px}
 
-  /* slot */
-  .slot{position:relative;border-radius:12px;padding:14px;text-align:center;min-height:110px;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.03);transition:transform .22s, box-shadow .22s, filter .22s;}
-  .slot:hover{transform:translateY(-8px);box-shadow:0 40px 100px rgba(3,10,25,0.7)}
-  .slot .title{font-weight:700;font-size:16px}
-  .slot .meta{color:var(--muted);font-size:12px;margin-top:8px}
-
-  /* neon animated border (using pseudo element) */
-  .slot::before{content:"";position:absolute;inset:-2px;border-radius:14px;padding:2px;background:linear-gradient(90deg,var(--accent-cyan),var(--accent-pink),var(--accent-purple));filter:blur(12px);opacity:0.9;z-index:0;mix-blend-mode:screen;transform:scale(.98);transition:transform .35s,opacity .35s}
-  .slot .inner{position:relative;z-index:1;border-radius:10px;padding:10px;background:linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.06))}
-  .slot:hover::before{transform:scale(1.02);opacity:1}
-
-  /* free / occ visual */
-  .slot.free .inner{background:linear-gradient(180deg, rgba(59,240,255,0.04), rgba(107,59,255,0.03));color:#06101a}
-  .slot.occ .inner{background:linear-gradient(180deg, rgba(255,72,196,0.04), rgba(255,88,88,0.02));color:#20060a}
-
-  /* glow pulse */
-  @keyframes neonPulse {
-    0%{filter:drop-shadow(0 0 0 rgba(59,240,255,0.00));}
-    50%{filter:drop-shadow(0 0 18px rgba(59,240,255,0.18));}
-    100%{filter:drop-shadow(0 0 0 rgba(59,240,255,0.00));}
+  h1 {
+    color: #00eaff;
+    margin-top: 20px;
+    text-shadow: 0 0 12px #00eaff;
   }
-  .neonPulse{animation:neonPulse 2.4s infinite}
 
-  /* confetti micro */
-  @keyframes confettiSmall{0%{opacity:0;transform:translateY(-8px) rotate(-10deg)}30%{opacity:1;transform:translateY(0) rotate(6deg)}100%{opacity:0;transform:translateY(8px) rotate(12deg)}}
-  .confetti{position:absolute;width:6px;height:10px;border-radius:2px;opacity:0;pointer-events:none}
+  .slots-grid {
+    margin: 40px auto;
+    width: 90%;
+    max-width: 900px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 20px;
+  }
 
-  /* controls */
-  .controls{display:flex;flex-direction:column;gap:12px}
-  .btn-primary{padding:10px 14px;border-radius:12px;border:none;background:linear-gradient(90deg,var(--accent-cyan),var(--accent-pink));color:#03101a;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
-  .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.03);padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer}
-  .legend{display:flex;gap:12px;align-items:center;margin-top:12px}
-  .dot{width:12px;height:12px;border-radius:50%}
-  .dot.free{background:var(--accent-cyan)}
-  .dot.occ{background:var(--accent-pink)}
-  .small{font-size:13px;color:var(--muted)}
+  .slot {
+    padding: 2px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #222, #111);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+  }
 
-  @media(max-width:980px){ main{grid-template-columns:1fr} .grid{grid-template-columns:repeat(2,1fr)} }
+  .slot .inner {
+    border-radius: 12px;
+    padding: 25px 0;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  /* ✅ FREE = GREEN */
+  .slot.free .inner {
+    background: linear-gradient(180deg, rgba(34,197,94,0.10), rgba(16,185,129,0.06));
+    color: #00ff66;
+    text-shadow: 0 0 8px #00ff66;
+  }
+
+  /* ✅ OCCUPIED = RED */
+  .slot.occ .inner {
+    background: linear-gradient(180deg, rgba(239,68,68,0.10), rgba(220,38,38,0.06));
+    color: #ff4d4d;
+    text-shadow: 0 0 8px #ff4d4d;
+  }
+
+  .bottom {
+    margin-top: 8px;
+    height: 6px;
+    border-radius: 10px;
+  }
 </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <div>
-        <h1>SmartCloudPark — Neon Dance Floor</h1>
-        <div class="sub">Cyberpunk realtime parking dashboard</div>
-      </div>
-      <div class="top-stats">
-        <div class="stat"><div class="small">Free</div><strong id="freeCount">0</strong></div>
-        <div class="stat"><div class="small">Occupied</div><strong id="occCount">0</strong></div>
-      </div>
-    </header>
-
-    <main>
-      <section class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-weight:700">Live Parking Grid</div>
-          <div class="small">Click a slot to toggle — neon visuals on update</div>
-        </div>
-
-        <div id="grid" class="grid" aria-live="polite"></div>
-
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
-          <div class="legend">
-            <div class="dot free"></div><div class="small">Available</div>
-            <div class="dot occ"></div><div class="small">Occupied</div>
-          </div>
-          <div class="small">Realtime via Supabase</div>
-        </div>
-      </section>
-
-      <aside class="card">
-        <div style="font-weight:700">Controls & Quick Actions</div>
-        <div style="margin-top:12px">
-          <div class="controls">
-            <div style="display:flex;gap:8px">
-              <button id="refreshBtn" class="btn-ghost">Refresh</button>
-              <a id="openSim" href="/simulator.html" class="btn-ghost" target="_blank">Open Simulator</a>
-            </div>
-
-            <div style="display:flex;gap:8px;margin-top:8px">
-              <button id="freeAll" class="btn-ghost">Mark all free</button>
-              <button id="occAll" class="btn-ghost">Mark all occupied</button>
-            </div>
-
-            <div style="margin-top:12px">
-              <div class="small">Details</div>
-              <div id="details" style="margin-top:8px;color:var(--muted);font-size:13px">Realtime count & updates appear here.</div>
-            </div>
-          </div>
-        </div>
-      </aside>
-    </main>
-  </div>
+<h1>SmartCloudPark Dashboard</h1>
+<div id="slots" class="slots-grid"></div>
 
 <script type="module">
-/* ========== CONFIG (public anon key) ========== */
-const SUPABASE_URL = 'https://ipzpjtoyicberwrvdpgd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwenBqdG95aWNiZXJ3cnZkcGdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyODE2NDgsImV4cCI6MjA3ODg1NzY0OH0.IRr_e6X8E49caJEIZGvHTZleLxMyxwXGkHyoDJjzWK4';
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const SUPABASE_URL = "https://ipzpjtoyicberwrvdpgd.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwenBqdG95aWNiZXJ3cnZkcGdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMyODE2NDgsImV4cCI6MjA3ODg1NzY0OH0.IRr_e6X8E49caJEIZGvHTZleLxMyxwXGkHyoDJjzWK4";
 
-/* UI refs */
-const gridEl = document.getElementById('grid');
-const freeCountEl = document.getElementById('freeCount');
-const occCountEl = document.getElementById('occCount');
-const refreshBtn = document.getElementById('refreshBtn');
-const freeAllBtn = document.getElementById('freeAll');
-const occAllBtn = document.getElementById('occAll');
-const details = document.getElementById('details');
+  const gradients = [
+    "linear-gradient(90deg,#16a34a,#34d399)", // green
+    "linear-gradient(90deg,#ef4444,#fb7185)", // red
+    "linear-gradient(90deg,#16a34a,#ef4444)"  // mixed
+  ];
 
-let slotsCache = [];
-let lastFlashId = null;
+  async function loadSlots() {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/parking_slots?select=*`, {
+      headers: { apikey: SUPABASE_KEY }
+    });
+    const slots = await response.json();
 
-function humanTime(ts){ try{ return new Date(ts).toLocaleTimeString(); }catch(e){ return '-' } }
+    const container = document.getElementById("slots");
+    container.innerHTML = "";
 
-async function fetchSlots(){
-  const { data, error } = await supabase.from('parking_slots').select('*').order('slot_id', { ascending: true });
-  if(error){ console.error(error); details.textContent = 'Error loading slots'; return; }
-  slotsCache = data || [];
-  renderSlots();
-}
+    slots.forEach((slot, index) => {
+      const state = slot.is_free ? "free" : "occ";
+      const bottomColor = gradients[index % gradients.length];
 
-function makeConfetti(parent){
-  // 6 small pieces
-  const colors = ['#FF3B8E','#FF9B3B','#FFD43B','#3BF0FF','#6B3BFF','#7BF06A'];
-  for(let i=0;i<6;i++){
-    const c = document.createElement('div');
-    c.className = 'confetti';
-    c.style.left = (10 + Math.random()*80) + '%';
-    c.style.top = (5 + Math.random()*50) + '%';
-    c.style.background = colors[i%colors.length];
-    parent.appendChild(c);
-    setTimeout(()=>{ c.style.opacity = 1; c.style.animation = 'confettiSmall .9s ease forwards'; }, 20 + i*50);
-    setTimeout(()=>c.remove(), 1100);
+      const div = document.createElement("div");
+      div.className = `slot ${state}`;
+      div.innerHTML = `
+        <div class="inner">${slot.slot_id}</div>
+        <div class="bottom" style="background:${bottomColor}"></div>
+      `;
+      container.appendChild(div);
+    });
   }
-}
 
-function flashDom(el){
-  el.classList.add('neonPulse');
-  setTimeout(()=>el.classList.remove('neonPulse'), 900);
-}
-
-function renderSlots(){
-  gridEl.innerHTML = '';
-  let free=0, occ=0;
-  let latest=null;
-  slotsCache.forEach((s, idx) => {
-    const outer = document.createElement('div');
-    outer.className = 'slot ' + (s.occupied ? 'occ' : 'free');
-
-    const inner = document.createElement('div');
-    inner.className = 'inner';
-    inner.innerHTML = `<div class="title">Slot ${s.slot_id}</div>
-                       <div class="meta">${s.occupied ? 'Occupied' : 'Available'}</div>
-                       <div class="meta" style="margin-top:8px">${humanTime(s.last_updated)}</div>
-                       <div style="margin-top:10px"><button class="btn-ghost" onclick="toggleSlot(${s.slot_id}, ${s.occupied})">${s.occupied ? 'Free it' : 'Occupy'}</button></div>`;
-    outer.appendChild(inner);
-
-    // accent strip bottom
-    const accent = document.createElement('div');
-    accent.style.position='absolute';
-    accent.style.left='0'; accent.style.bottom='0'; accent.style.height='6px';
-    accent.style.width='100%'; accent.style.zIndex='0';
-    const gradients = [
-      `linear-gradient(90deg,var(--accent-cyan,var(--accent-cyan)),var(--accent-pink))`,
-      `linear-gradient(90deg,var(--accent-pink),var(--accent-purple))`,
-      `linear-gradient(90deg,var(--accent-purple),var(--accent-cyan))`
-    ];
-    accent.style.background = gradients[idx % gradients.length];
-    outer.appendChild(accent);
-
-    gridEl.appendChild(outer);
-
-    if(lastFlashId === s.slot_id){
-      makeConfetti(outer);
-      flashDom(outer);
-      lastFlashId = null;
-    }
-
-    s.occupied ? occ++ : free++;
-    latest = s.last_updated || latest;
-  });
-  freeCountEl.textContent = free;
-  occCountEl.textContent = occ;
-  details.textContent = `Showing ${slotsCache.length} slots • Free: ${free} • Occupied: ${occ}`;
-}
-
-/* toggle exposed for button */
-window.toggleSlot = async function(slotId, occupied){
-  await supabase.from('parking_slots').update({ occupied: !occupied, last_updated: new Date().toISOString() }).eq('slot_id', slotId);
-  lastFlashId = slotId;
-  fetchSlots();
-};
-
-/* bulk actions */
-document.getElementById('freeAll').addEventListener('click', async ()=>{
-  await Promise.all((slotsCache||[]).map(s=> supabase.from('parking_slots').update({ occupied:false, last_updated:new Date().toISOString() }).eq('slot_id', s.slot_id)));
-  fetchSlots();
-});
-document.getElementById('occAll').addEventListener('click', async ()=>{
-  await Promise.all((slotsCache||[]).map(s=> supabase.from('parking_slots').update({ occupied:true, last_updated:new Date().toISOString() }).eq('slot_id', s.slot_id)));
-  fetchSlots();
-});
-
-refreshBtn.addEventListener('click', fetchSlots);
-
-/* realtime subscription — flash updated row */
-supabase
-  .channel('public:parking_slots')
-  .on('postgres_changes', { event: '*', schema: 'public', table: 'parking_slots' }, payload => {
-    const rec = payload.record;
-    lastFlashId = rec.slot_id;
-    const idx = slotsCache.findIndex(x=>x.slot_id===rec.slot_id);
-    if(idx>=0) slotsCache[idx] = rec; else slotsCache.push(rec);
-    renderSlots();
-  })
-  .subscribe();
-
-/* initial load */
-fetchSlots();
+  loadSlots();
+  setInterval(loadSlots, 2000); 
 </script>
 </body>
 </html>
